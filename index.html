@@ -4,26 +4,28 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
 
-    <title>Globalization examples</title>
+    <title>Client-side globalization</title>
 
     <link rel="stylesheet" href="Content/Site.css" />
-    <link rel="stylesheet" href="Content/Tablesorter.css" />
 
     <script type="text/javascript" src="Scripts/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="Scripts/jquery.tablesorter.min.js"></script>
+
+    <!-- This file contains the Globalize library, which handles the actual globalization -->
     <script type="text/javascript" src="Scripts/globalize.js"></script>
+
+    <!-- This file contains all the cultures supported by the Globalize library -->
     <script type="text/javascript" src="Scripts/globalize.cultures.js"></script>
 </head>
 <body>
-    <h1>Globalization examples</h1>
+    <h1>Client-side globalization example</h1>
 
     <p>
         The <a href="https://github.com/jquery/globalize">Globalize JavaScript library</a> is a small library that can be used to build in client-side globalization support in your application.
-        The table below shows for all the cultures available in the Globalize library globalized sample output.
+        Doing so is surprisingly easy. To see just how easy, just look at the source code. The table below shows globalized sample output for all the cultures available in the Globalize library. It shows that
     </p>
 
     <!-- This table will contain globalized samples for all the supported cultures -->
-    <table id="examplesTable" class="tablesorter">
+    <table>
         <thead>
             <tr>
                 <th>Locale</th>

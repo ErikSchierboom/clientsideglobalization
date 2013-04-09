@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>Globalization examples</title>
+
+    <link rel="stylesheet" href="Content/Site.css" />
+    <link rel="stylesheet" href="Content/Tablesorter.css" />
+
+    <script type="text/javascript" src="Scripts/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.globalize/globalize.js"></script>
+</head>
+<body>
+    <h1>Globalization examples</h1>
+
+    <p>
+        The <a href="https://github.com/jquery/globalize">Globalize JavaScript library</a> is a small library that can be used to build in client-side globalization support in your application.
+        The table below shows for all the cultures available in the Globalize library globalized sample output.
+    </p>
+
+    <!-- This table will contain globalized samples for all the supported cultures -->
+    <table id="examplesTable" class="tablesorter">
+        <thead>
+            <tr>
+                <th>Locale</th>
+                <th>Date</th>
+                <th>Datetime</th>
+                <th>Integer</th>
+                <th>Float</th>
+                <th>Currency</th>
+            </tr>
+        </thead>
+
+        <!-- We will be dynamically adding rows to the table body once we get render the culture-specific examples -->
+        <tbody id="examples">
+        </tbody>
+    </table>    
+    
+    <script type="text/javascript">
+
+        function getCulturesAsync() {
+            // Return a promises that retrieves the cultures
+            return $.getJSON('cultures.json');
+        }
+
+        function createExamplesForCultureAsHtml(culture) {
+            return '<tr>' +
+                       '<td>' + culture + '</td>' +
+                       '<td>' + Globalize.format(new Date(2012, 1, 20), 'D', culture) + '</td>' +             // date example
+                       '<td>' + Globalize.format(new Date(2012, 1, 20, 9, 15, 50), 'F', culture) + '</td>' +  // datetime example
+                       '<td>' + Globalize.format(123456789, 'n', culture) + '</td>' +                         // large number example
+                       '<td>' + Globalize.format(12.34, 'n', culture) + '</td>' +                             // floating-point number example
+                       '<td>' + Globalize.format(1234.56, 'c', culture) + '</td>' +                           // currency example
+                   '</tr>';
+        }
+
+        function renderExamplesForCultureAsync(culture) {
+
+            // Determine the path to the culture's globalization file
+            var cultureScript = 'Scripts/jquery.globalize/cultures/globalize.culture.' + culture + '.js';
+            
+            // Retrieve the culture's file and after retrieving it, render the example in that culture.
+            // We are returning the result of getScript() (which is a promise) to be able to wait on
+            // all examples to be finished
+            return $.getScript(cultureScript).done(function () {
+                        // Create the HTML for the examples in the specified culture
+                        var examplesForSpecificCulture = createExamplesForCultureAsHtml(culture);
+
+                        // Add the examples to the list of examples
+                        $('#examples').append(examplesForSpecificCulture);
+                    });
+        }
+
+        function renderExamplesForCulturesAsync() {
+                        
+            // Get the promise that
+            var culturesAsync = getCulturesAsync();        
+            
+            // Wait for all the cultures to finish rendering and then add the table sorter to the examples table
+            return $.when(culturesAsync).pipe(function (cultures) {
+                var renderExamplesAsync = [];
+
+                // For each culture, we will get the promise to render its examples and add it
+                // to the array containing all promises
+                $.each(cultures, function (index, culture) {
+                    renderExamplesAsync.push(renderExamplesForCultureAsync(culture))
+                });
+
+                // We return an array of all promises to be able to wait on all of the promises to finish
+                return $.when.apply(null, renderExamplesAsync);
+            });
+        }
+
+        $(document).ready(function () {
+
+            // Create the promises to render the culture-specific examples
+            var renderExamplesAsync = renderExamplesForCulturesAsync();
+            
+            // Wait for all the cultures to finish rendering and then add the table sorter to the examples table
+            $.when(renderExamplesAsync).done(function () {
+                $("#examplesTable").tablesorter();
+            });
+        });
+    </script>
+    
+</body>
+</html>

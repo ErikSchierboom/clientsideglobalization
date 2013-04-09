@@ -1,4 +1,4 @@
-jqueryglobalization
+jQuery globalization
 ===================
 
-A small demo application that shows how to globalize jQuery (and jQuery UI)
+A small demo application that shows how to globalize jQuery (and jQuery UI).
